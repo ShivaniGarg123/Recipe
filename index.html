@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body style="background-color: rosybrown">
+<center>
+<h1>Recipe Home</h1>
+<input type="text" placeholder="Enter the recipe name" id="name">
+<input type="number" placeholder="Enter the recipe servings" id="servings">
+<input type="number" placeholder=" Enter Total Cook Time" id="time"><br/><br/>
+<textarea placeholder="Enter recipe" id="recipe" rows="20" cols="60"></textarea><br/><button onclick="AddR()"> Add Recipe</button>
+ &ensp;<button onclick="DelRecipe()">Delete Recipe</button> 
+    &ensp;<button onclick="DelImg()">Delete recipe's image</button><br/><br/>
+<!--<input placeholder="Enter recipe" id="recipe" style="width: max-content">-->
+<h4 style="color: black; border: black " >If you want to add pic for recipe</h4>
+<input type="file" value="Upload" id="upload">
+<br/><br/>
+<input type="text" placeholder="name of recipe's image" id="rname">
+<button onclick="RecipeImage()">Recipe image</button>
+<br/><br/>
+<img id="myImg" width="400" height="235" >
+ <!--<br/><img id="myImg" width="400" height="235" >-->
+ <!--<input type="text" placeholder="name of recipe's image" id="rname">
+<button onclick="RecipeImage()">Recipe image</button>-->
+
+
+</center>
+</body>
+<!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/4.8.1/firebase.js"></script>
+<script src="https://www.gstatic.com/firebasejs/6.2.4/firebase-firestore.js"></script>
+
+
+<!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#config-web-app --><script>
+    // Your web app's Firebase configuration
+    var firebaseConfig = {
+        apiKey: "AIzaSyDeppC3OC5BGtuAHsxNjUXU_3I5QrLp988",
+        authDomain: "recepie-5678e.firebaseapp.com",
+        databaseURL: "https://recepie-5678e.firebaseio.com",
+        projectId: "recepie-5678e",
+        storageBucket: "recepie-5678e.appspot.com",
+        messagingSenderId: "344524745474",
+        appId: "1:344524745474:web:f63dd1c45a7cb42f"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    var db=firebase.firestore();
+
+    function AddR() {
+        var  Name=document.getElementById("name").value;
+        var servings=document.getElementById("servings").value;
+        var recipe=document.getElementById("recipe").value;
+        var time=document.getElementById("time").value;
+        db.collection("recipes").doc(Name).set({
+            servings:servings,
+            time:time,
+            recipe:recipe
+        })
+
+    }
+
+
+    var upload=document.getElementById("upload");
+   // var  n=document.getElementById("name").value;
+    upload.addEventListener('change',(event)=>{
+        //Get File
+        var file=event.target.files[0];
+
+        //Create a storage reference
+        var storageRef=firebase.storage().ref('images/'+file.name);
+        //upload file
+        storageRef.put(file).then(()=>{
+            console.log("file has been uploaded");
+        }).catch((err)=>{
+            console.log(err.message);
+        })
+
+    });
+    function RecipeImage() {
+        var r=document.getElementById("rname").value;
+        var ref=firebase.storage().ref('images/'+r.name);
+        ref.getDownloadURL().then((url)=>{
+            var img=document.getElementById("myImg");
+            img.src=url
+        }).then(()=>{
+            console.log("This is image");
+        }).catch((error)=>{
+            console.log(error.message);
+        })
+    }
+    function DelRecipe() {
+        var n=document.getElementById("name").value;
+        db.collection("recipes").doc(n).delete().then(()=>{
+            console.log("document deleted");
+        }).catch((err)=>{
+            console.log(err.message);
+        })
+    }
+    function DelImg() {
+        var image=document.getElementById("rname").value;
+        var Reference=firebase.storage().ref('images/'+image);
+        Reference.delete().then(()=>{
+            console.log("image deleted");
+        }).catch((error)=>{
+            console.log(error);
+        })
+
+    }
+</script>
+</html>
